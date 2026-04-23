@@ -358,10 +358,20 @@ body.theme-plana .drop-zone:hover {
 }
 
 /* --- ASSETS (MASCOT) --- */
-.mascot {
+.mascot-container {
     position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.mascot {
+    position: absolute;
     bottom: 0;
-    z-index: -1; /* Pastikan selalu di belakang panel */
     pointer-events: none;
     max-height: 55vh;
     transition: opacity 0.8s, transform 0.8s;
