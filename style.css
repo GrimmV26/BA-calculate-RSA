@@ -228,6 +228,37 @@ input {
     color: #333;
     font-size: 14px;
     transition: 0.3s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input-group {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.toggle-btn {
+    position: absolute;
+    right: 12px;
+    bottom: 10px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 18px;
+    opacity: 0.5;
+    transition: 0.3s;
+    user-select: none;
+    padding: 0;
+}
+
+body.theme-plana .toggle-btn {
+    color: white;
+}
+
+.toggle-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
 }
 
 body.theme-plana input {

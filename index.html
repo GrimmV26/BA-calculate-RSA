@@ -66,9 +66,10 @@
                         <label>N (MODULUS)</label>
                         <input type="text" id="n_val" readonly>
                     </div>
-                    <div class="col">
+                    <div class="col input-group">
                         <label>D (PRIVATE)</label>
                         <input type="password" id="d_val" readonly placeholder="...">
+                        <button class="toggle-btn" onclick="toggleView('d_val')">👁️</button>
                     </div>
                 </div>
             </div>
@@ -143,9 +144,10 @@
                         <label>Decoded Modulus N</label>
                         <input type="text" id="pn_val" readonly>
                     </div>
-                    <div class="col">
+                    <div class="col input-group">
                         <label>Decoded Private D</label>
                         <input type="password" id="pd_val" readonly>
+                        <button class="toggle-btn" onclick="toggleView('pd_val')">👁️</button>
                     </div>
                 </div>
 
