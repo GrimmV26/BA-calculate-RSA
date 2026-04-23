@@ -80,7 +80,7 @@
                 <div class="drop-zone" onclick="document.getElementById('file-ar').click()"
                     ondragover="event.preventDefault()" ondrop="event.preventDefault(); handleDrop(event, 'ar')">
                     <div id="txt-ar">Klik atau Seret Berkas Di Sini</div>
-                    <input type="file" id="file-ar" style="display:none" onchange="handleSelect(this, 'ar')">
+                    <input type="file" id="file-ar" hidden multiple onchange="handleSelect(this, 'ar')">
                 </div>
 
                 <button class="action-btn arona-btn" style="margin-top: 15px;" onclick="processFile(true)">
@@ -97,7 +97,7 @@
         <!-- PAGE 2: DECRYPTION (PLANA) -->
         <div id="page-plana" class="page">
             <div class="header-box plana-header">
-                <span>EXTRACTION PROTOCOL</span>
+                <span>DECRYPT PROTOCOL</span>
             </div>
 
             <div class="glass-panel plana-glass">

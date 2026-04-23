@@ -198,6 +198,7 @@ body.theme-plana .nav-indicator {
     position: relative;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.3);
+    will-change: transform, opacity; /* Akselerasi GPU */
 }
 
 body.theme-plana .glass-panel {
@@ -370,7 +371,8 @@ body.theme-plana .drop-zone:hover {
     background-repeat: no-repeat;
     background-size: auto 55%;
     opacity: 0;
-    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: opacity, transform; /* Akselerasi GPU */
 }
 
 .mascot-arona {
