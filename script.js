@@ -298,7 +298,7 @@ async function processFile(isEnc) {
             const url = URL.createObjectURL(zipBlob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = "SCHALE_VAULT_" + randomID + ".zip";
+            a.download = "ENCRYPTED_" + randomID + ".zip";
             a.click();
             
             // Bersihkan memori dalam 1 menit
