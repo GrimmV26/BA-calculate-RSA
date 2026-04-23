@@ -77,9 +77,24 @@ function switchPage(target) {
     }
 }
 
-// Sinkronisasi Navigasi saat Start
+// Sinkronisasi Navigasi & Lock Viewport saat Start
 window.addEventListener('load', () => {
     switchPage('arona');
+    
+    // Lock mascot position for mobile keyboard
+    const vh = window.innerHeight;
+    document.documentElement.style.setProperty('--doc-height', `${vh}px`);
+
+    // Anti-Jumping Mascot Logic
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', () => {
+            const offset = window.innerHeight - window.visualViewport.height;
+            const mascots = document.querySelectorAll('.mascot');
+            mascots.forEach(m => {
+                m.style.bottom = `-${offset}px`;
+            });
+        });
+    }
 });
 
 function toggleView(id) {
