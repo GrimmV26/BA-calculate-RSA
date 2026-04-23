@@ -57,10 +57,11 @@ nav {
     transform: translateX(-50%);
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
-    padding: 10px 25px;
+    padding: 5px;
     border-radius: 50px;
     display: flex;
-    gap: 15px;
+    width: 90%;
+    max-width: 400px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     border: 1px solid rgba(0, 0, 0, 0.05);
@@ -72,17 +73,20 @@ body.theme-plana nav {
 }
 
 .nav-btn {
+    flex: 1;
     position: relative;
     border: none;
     background: none;
     font-family: 'Jura', sans-serif;
     font-weight: 700;
-    padding: 10px 25px;
+    padding: 12px 20px;
     border-radius: 25px;
     cursor: pointer;
     transition: 0.3s;
     color: #888;
     z-index: 2;
+    font-size: 13px;
+    white-space: nowrap;
 }
 
 .nav-btn.active {
@@ -95,13 +99,13 @@ body.theme-plana .nav-btn.active {
 
 .nav-indicator {
     position: absolute;
-    top: 10px;
-    left: 25px;
-    height: calc(100% - 20px);
-    width: 140px;
+    top: 5px;
+    left: 5px;
+    height: calc(100% - 10px);
+    width: 0; /* Akan diatur oleh JS */
     background: var(--ba-blue);
     border-radius: 25px;
-    transition: 0.3s ease-in-out;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1;
     box-shadow: 0 4px 10px rgba(18, 179, 228, 0.3);
 }

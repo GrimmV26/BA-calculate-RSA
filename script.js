@@ -72,10 +72,15 @@ function switchPage(target) {
     const indicator = document.getElementById('nav-indicator');
 
     if (btn && indicator) {
-        indicator.style.left = btn.offsetLeft + 'px';
-        indicator.style.width = btn.offsetWidth + 'px';
+        indicator.style.left = btn.offsetLeft + "px";
+        indicator.style.width = btn.offsetWidth + "px";
     }
 }
+
+// Sinkronisasi Navigasi saat Start
+window.addEventListener('load', () => {
+    switchPage('arona');
+});
 
 function toggleView(id) {
     const input = document.getElementById(id);
