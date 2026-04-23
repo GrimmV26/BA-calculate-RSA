@@ -1,353 +1,149 @@
-// --- RSA CORE ---
-function gcd(a, b) {
-    a = BigInt(a);
-    b = BigInt(b);
-    while (b !== 0n) {
-        let t = b;
-        b = a % b;
-        a = t;
-    }
-    return a;
-}
+/**
+ * SCHALE RSA TOOL - COMPACT LOGIC
+ */
 
-function modInverse(e, m) {
-    e = BigInt(e);
-    m = BigInt(m);
-
-    let t0 = 0n;
-    let t1 = 1n;
-    let r0 = m;
-    let r1 = e;
-
-    while (r1 !== 0n) {
-        let q = r0 / r1;
-        let t = t0 - q * t1;
-        t0 = t1;
-        t1 = t;
-        let r = r0 - q * r1;
-        r0 = r1;
-        r1 = r;
-    }
-
-    if (t0 < 0n) {
-        return t0 + m;
-    } else {
-        return t0;
-    }
-}
-
-function modPow(b, e, m) {
-    let res = 1n;
-    b = BigInt(b) % BigInt(m);
-    e = BigInt(e);
-    m = BigInt(m);
-
-    while (e > 0n) {
-        if (e % 2n === 1n) {
-            res = (res * b) % m;
-        }
-        e = e / 2n;
-        b = (b * b) % m;
-    }
+// RSA MATH UTILITIES
+const gcd = (a, b) => b === 0n ? a : gcd(b, a % b);
+const modPow = (b, e, m) => {
+    let res = 1n; b = BigInt(b) % BigInt(m); e = BigInt(e); m = BigInt(m);
+    while (e > 0n) { if (e % 2n === 1n) res = (res * b) % m; e /= 2n; b = (b * b) % m; }
     return res;
-}
+};
+const modInverse = (e, m) => {
+    let [t0, t1, r0, r1] = [0n, 1n, BigInt(m), BigInt(e)];
+    while (r1 !== 0n) { let q = r0 / r1; [t0, t1] = [t1, t0 - q * t1]; [r0, r1] = [r1, r0 - q * r1]; }
+    return t0 < 0n ? t0 + BigInt(m) : t0;
+};
 
-// --- UI & NAVIGATION ---
-function switchPage(target) {
+// UI & NAVIGATION
+const switchPage = (target) => {
     document.body.className = "theme-" + target;
-
-    const pages = ['arona', 'plana'];
-    pages.forEach(p => {
-        const pageEl = document.getElementById('page-' + p);
-        const btnEl = document.getElementById('nav-btn-' + p);
-        const imgEl = document.getElementById('img-' + p);
-
-        if (pageEl) pageEl.classList.toggle('active', p === target);
-        if (btnEl) btnEl.classList.toggle('active', p === target);
-        if (imgEl) imgEl.classList.toggle('active', p === target);
+    ['arona', 'plana'].forEach(p => {
+        const isActive = p === target;
+        ['page-', 'nav-btn-', 'bg-'].forEach(prefix => {
+            const el = document.getElementById(prefix + p);
+            if (el) el.classList.toggle('active', isActive);
+        });
     });
+    const btn = document.getElementById('nav-btn-' + target), ind = document.getElementById('nav-indicator');
+    if (btn && ind) { ind.style.left = btn.offsetLeft + "px"; ind.style.width = btn.offsetWidth + "px"; }
+};
 
-    // Move Indicator
-    const btn = document.getElementById('nav-btn-' + target);
-    const indicator = document.getElementById('nav-indicator');
+const toggleView = (id) => {
+    const el = document.getElementById(id), btn = el.nextElementSibling;
+    el.type = el.type === "password" ? "text" : "password";
+    btn.innerText = el.type === "password" ? "👁️" : "🕶️";
+};
 
-    if (btn && indicator) {
-        indicator.style.left = btn.offsetLeft + "px";
-        indicator.style.width = btn.offsetWidth + "px";
-    }
-}
+// FILE HANDLING
+let [fileToEnc, fileToDec, originalName] = [null, null, ""];
 
-// Sinkronisasi Navigasi & Lock Viewport saat Start
-window.addEventListener('load', () => {
-    switchPage('arona');
-    
-    // Lock mascot position for mobile keyboard
-    const layer = document.getElementById('mascot-layer');
-    if (layer) {
-        layer.style.height = window.innerHeight + "px";
-    }
-});
-
-function toggleView(id) {
-    const input = document.getElementById(id);
-    const btn = input.nextElementSibling;
-    if (input) {
-        if (input.type === "password") {
-            input.type = "text";
-            btn.innerText = "🕶️";
-        } else {
-            input.type = "password";
-            btn.innerText = "👁️";
-        }
-    }
-}
-
-// --- LOGIC ---
-let fileToEnc = null;
-let fileToDec = null;
-let originalNameFromKey = ""; 
-
-function handleSelect(input, mode) {
-    if (input.files.length > 0) {
-        registerFile(input.files[0], mode);
-    }
-}
-
-function handleDrop(e, mode) {
-    if (e.dataTransfer.files.length > 0) {
-        registerFile(e.dataTransfer.files[0], mode);
-    }
-}
-
-// --- ZIP LOGIC ---
-function handleZipSelect(input) {
-    if (input.files.length > 0) {
-        processZip(input.files[0]);
-    }
-}
-
-function handleZipDrop(e) {
-    if (e.dataTransfer.files.length > 0) {
-        processZip(e.dataTransfer.files[0]);
-    }
-}
-
-async function processZip(file) {
-    try {
-        const zip = await JSZip.loadAsync(file);
-        const zipNameEl = document.getElementById('txt-zip');
-        if (zipNameEl) zipNameEl.innerText = "Processing: " + file.name;
-
-        let encFile = null;
-        let kcFile = null;
-
-        for (let filename in zip.files) {
-            if (filename.endsWith('.enc')) {
-                encFile = zip.files[filename];
-            }
-            if (filename.endsWith('.kc')) {
-                kcFile = zip.files[filename];
-            }
-        }
-
-        if (encFile && kcFile) {
-            // Load .enc as Blob
-            const encBlob = await encFile.async("blob");
-            fileToDec = new File([encBlob], encFile.name);
-            document.getElementById('txt-cip').innerText = encFile.name + " (From ZIP)";
-
-            // Load .kc as Text
-            const kcText = await kcFile.async("string");
-            parseKC(kcText, kcFile.name);
-
-            if (zipNameEl) zipNameEl.innerText = "ZIP Loaded Successfully!";
-            checkPlanaReady();
-        } else {
-            alert("Arona: File ZIP tidak lengkap! Pastikan ada file .enc dan kartu kunci .kc di dalamnya.");
-        }
-    } catch (e) {
-        alert("Arona: Gagal memproses ZIP. Pastikan file tidak korup.");
-    }
-}
-
-function registerFile(file, mode) {
+const regFile = (file, mode) => {
     if (!file) return;
-
-    if (mode === 'ar') {
-        fileToEnc = file;
-        document.getElementById('txt-ar').innerText = file.name;
-    } else if (mode === 'cip') {
-        fileToDec = file;
-        document.getElementById('txt-cip').innerText = file.name;
-        checkPlanaReady();
-    } else if (mode === 'tk') {
-        const reader = new FileReader();
-        reader.onload = () => {
-            parseKC(reader.result, file.name);
-        };
-        reader.readAsText(file);
+    if (mode === 'ar') { fileToEnc = file; document.getElementById('txt-ar').innerText = file.name; }
+    else if (mode === 'cip') { fileToDec = file; document.getElementById('txt-cip').innerText = file.name; checkReady(); }
+    else if (mode === 'tk') { 
+        const reader = new FileReader(); 
+        reader.onload = () => parseKC(reader.result, file.name); 
+        reader.readAsText(file); 
     }
-}
+};
 
-function parseKC(txt, filename) {
-    const mN = txt.match(/MODULUS \(N\):\s*(\d+)/);
-    const mD = txt.match(/PRIVATE KEY \(D\):\s*(\d+)/);
-    const mName = txt.match(/ORIGINAL NAME:\s*(.*)/);
-
+const parseKC = (txt, fn) => {
+    const mN = txt.match(/MODULUS \(N\):\s*(\d+)/), mD = txt.match(/PRIVATE KEY \(D\):\s*(\d+)/), mNm = txt.match(/ORIGINAL NAME:\s*(.*)/);
     if (mN && mD) {
         document.getElementById('pn_val').value = mN[1];
         document.getElementById('pd_val').value = mD[1];
-        
-        if (mName) {
-            originalNameFromKey = mName[1].trim();
-        }
-
-        const tkLabel = document.getElementById('txt-tk');
-        if (tkLabel) {
-            tkLabel.innerText = filename + (filename.includes("ZIP") ? "" : " (Parsed)");
-        }
-        checkPlanaReady();
-    } else {
-        alert("Arona: Format Kartu Kunci tidak dikenali!");
+        originalName = mNm ? mNm[1].trim() : "";
+        document.getElementById('txt-tk').innerText = fn;
+        checkReady();
     }
-}
+};
 
-function checkPlanaReady() {
-    const btn = document.getElementById('btn-pl-exec');
-    const hasFile = fileToDec !== null;
-    const hasN = document.getElementById('pn_val').value !== "";
-    const hasD = document.getElementById('pd_val').value !== "";
-
-    if (hasFile && hasN && hasD && btn) {
-        btn.disabled = false;
-        btn.style.boxShadow = "0 0 20px rgba(255,255,255,0.4)";
-    }
-}
-
-function calcKeys() {
+const processZip = async (file) => {
     try {
-        const pInput = document.getElementById('p_val').value;
-        const qInput = document.getElementById('q_val').value;
-        const eInput = document.getElementById('e_val').value;
-
-        if (!pInput || !qInput || !eInput) {
-            alert("Arona: Tolong isi P, Q, dan E terlebih dahulu!");
-            return;
+        const zip = await JSZip.loadAsync(file);
+        let [enc, kc] = [null, null];
+        for (let fn in zip.files) {
+            if (fn.endsWith('.enc')) enc = zip.files[fn];
+            if (fn.endsWith('.kc')) kc = zip.files[fn];
         }
-
-        let p = BigInt(pInput);
-        let q = BigInt(qInput);
-        let e = BigInt(eInput);
-        
-        let n = p * q;
-        let m = (p - 1n) * (q - 1n);
-
-        if (gcd(e, m) !== 1n) {
-            alert("Arona: Kunci Publik (E) tidak valid!\n\nTips :\n1. Gunakan angka prima ganjil.\n2. Coba angka standar: 3, 17, atau 65537.\n3. Pastikan E < (P-1)*(Q-1).");
-            return;
+        if (enc && kc) {
+            fileToDec = new File([await enc.async("blob")], enc.name);
+            parseKC(await kc.async("string"), kc.name + " (ZIP)");
+            document.getElementById('txt-cip').innerText = enc.name + " (ZIP)";
         }
+    } catch (e) { alert("Arona: ZIP Error!"); }
+};
 
-        document.getElementById('n_val').value = n.toString();
-        document.getElementById('d_val').value = modInverse(e, m).toString();
-        
-        alert("Arona: Kunci Vault Berhasil Dibuat!");
-    } catch (err) {
-        alert("Arona: Terjadi kesalahan input!");
-    }
-}
+const checkReady = () => {
+    const btn = document.getElementById('btn-pl-exec');
+    btn.disabled = !(fileToDec && document.getElementById('pn_val').value && document.getElementById('pd_val').value);
+};
 
-async function processFile(isEnc) {
+// CORE ACTIONS
+const calcKeys = () => {
+    const [p, q, e] = ["p_val", "q_val", "e_val"].map(id => BigInt(document.getElementById(id).value || 0));
+    if (!p || !q || !e) return alert("Isi P, Q, E!");
+    const m = (p - 1n) * (q - 1n);
+    if (gcd(e, m) !== 1n) return alert("E tidak valid! Tips: Gunakan angka prima (3, 17, 65537)");
+    document.getElementById('n_val').value = (p * q).toString();
+    document.getElementById('d_val').value = modInverse(e, m).toString();
+};
+
+const processFile = (isEnc) => {
     const file = isEnc ? fileToEnc : fileToDec;
-    
-    if (!file) {
-        alert("Pilih file terlebih dahulu!");
-        return;
-    }
-
-    const nVal = document.getElementById(isEnc ? 'n_val' : 'pn_val').value;
-    const kVal = document.getElementById(isEnc ? 'e_val' : 'pd_val').value;
-
-    if (!nVal || !kVal) {
-        alert("Kunci belum siap!");
-        return;
-    }
-
-    const n = BigInt(nVal);
-    const k = BigInt(kVal);
-    const id = isEnc ? 'ar' : 'pl';
+    const [n, k] = [isEnc ? 'n_val' : 'pn_val', isEnc ? 'e_val' : 'pd_val'].map(id => BigInt(document.getElementById(id).value || 0));
+    if (!file || !n || !k) return alert("File/Kunci belum siap!");
 
     const reader = new FileReader();
     reader.onload = async () => {
-        const buffer = new Uint8Array(reader.result);
-        const progContainer = document.getElementById('prog-' + id);
-        const fillBar = document.getElementById('fill-' + id);
-        
-        if (progContainer) {
-            progContainer.style.display = "block";
-        }
+        const buf = new Uint8Array(reader.result), id = isEnc ? 'ar' : 'pl';
+        const prog = document.getElementById('prog-' + id), fill = document.getElementById('fill-' + id);
+        prog.style.display = "block";
 
         let out;
         if (isEnc) {
-            out = new BigUint64Array(buffer.length);
-            for (let i = 0; i < buffer.length; i++) {
-                out[i] = modPow(buffer[i], k, n);
-                if (i % 100 === 0 && fillBar) {
-                    fillBar.style.width = (i / buffer.length * 100) + "%";
-                }
-            }
+            out = new BigUint64Array(buf.length);
+            buf.forEach((v, i) => { out[i] = modPow(v, k, n); if (i % 100 === 0) fill.style.width = (i / buf.length * 100) + "%"; });
         } else {
-            const view = new BigUint64Array(buffer.buffer);
+            const view = new BigUint64Array(buf.buffer);
             out = new Uint8Array(view.length);
-            for (let i = 0; i < view.length; i++) {
-                out[i] = Number(modPow(view[i], k, n));
-                if (i % 50 === 0 && fillBar) {
-                    fillBar.style.width = (i / view.length * 100) + "%";
-                }
-            }
+            view.forEach((v, i) => { out[i] = Number(modPow(v, k, n)); if (i % 100 === 0) fill.style.width = (i / view.length * 100) + "%"; });
         }
 
         if (isEnc) {
-            const randomID = Math.random().toString(36).substring(2, 10).toUpperCase();
-            const zip = new JSZip();
-
-            // Tambahkan file terenkripsi
-            zip.file("SCHALE_ENCRYPTED_" + randomID + ".enc", out.buffer);
-
-            // Tambahkan Key Card (.kc)
-            const dVal = document.getElementById('d_val').value;
-            const kcContent = `SCHALE SECURITY KEY CARD\nORIGINAL NAME: ${file.name}\nMODULUS (N): ${nVal}\nPUBLIC KEY (E): ${kVal}\nPRIVATE KEY (D): ${dVal}`;
-            zip.file("Key_Card_" + file.name.split('.')[0] + ".kc", kcContent);
-
-            // Generate ZIP
-            const zipBlob = await zip.generateAsync({ type: "blob" });
-            const url = URL.createObjectURL(zipBlob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = "ENCRYPTED_" + randomID + ".zip";
-            a.click();
-            
-            // Bersihkan memori dalam 1 menit
-            setTimeout(() => {
-                URL.revokeObjectURL(url);
-            }, 60000);
+            const zip = new JSZip(), rid = Math.random().toString(36).substr(2, 8).toUpperCase();
+            zip.file(`DATA_${rid}.enc`, out.buffer);
+            zip.file("KEY_CARD.kc", `ORIGINAL NAME: ${file.name}\nMODULUS (N): ${n}\nPRIVATE KEY (D): ${document.getElementById('d_val').value}`);
+            saveAs(await zip.generateAsync({ type: "blob" }), `ENCRYPTED_${rid}.zip`);
         } else {
-            const blob = new Blob([out.buffer]);
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = originalNameFromKey || "recovered_file.bin";
-            a.click();
-            
-            // Bersihkan memori dalam 1 menit
-            setTimeout(() => {
-                URL.revokeObjectURL(url);
-            }, 60000);
+            saveAs(new Blob([out]), originalName || "recovered.bin");
         }
-
-        if (progContainer) {
-            progContainer.style.display = "none";
-        }
-        alert("Protokol Selesai!");
+        prog.style.display = "none"; alert("Selesai!");
     };
     reader.readAsArrayBuffer(file);
-}
+};
+
+const saveAs = (blob, fn) => {
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = fn; a.click(); setTimeout(() => URL.revokeObjectURL(url), 60000);
+};
+
+// BRIDGES (HTML to JS)
+const handleSelect = (input, mode) => regFile(input.files[0], mode);
+const handleDrop = (e, mode) => regFile(e.dataTransfer.files[0], mode);
+const handleZipSelect = (input) => processZip(input.files[0]);
+const handleZipDrop = (e) => processZip(e.dataTransfer.files[0]);
+
+// INITIALIZATION
+window.addEventListener('load', () => {
+    switchPage('arona');
+    // Re-lock height on resize
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', () => {
+            const offset = window.innerHeight - window.visualViewport.height;
+            document.querySelectorAll('.mascot-bg').forEach(m => m.style.bottom = `-${offset}px`);
+        });
+    }
+});
