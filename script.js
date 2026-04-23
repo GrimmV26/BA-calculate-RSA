@@ -139,11 +139,8 @@ const handleZipDrop = (e) => processZip(e.dataTransfer.files[0]);
 // INITIALIZATION
 window.addEventListener('load', () => {
     switchPage('arona');
-    // Re-lock height on resize
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', () => {
-            const offset = window.innerHeight - window.visualViewport.height;
-            document.querySelectorAll('.mascot-bg').forEach(m => m.style.bottom = `-${offset}px`);
-        });
-    }
+    const h = window.innerHeight;
+    document.querySelectorAll('.mascot-bg').forEach(bg => {
+        bg.style.height = h + "px";
+    });
 });
