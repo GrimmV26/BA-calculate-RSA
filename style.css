@@ -371,25 +371,27 @@ body.theme-plana .drop-zone:hover {
     background-repeat: no-repeat;
     background-size: auto 55%;
     opacity: 0;
-    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-    will-change: opacity, transform; /* Akselerasi GPU */
+    --ty: 0px;
+    transform: translate(var(--tx), var(--ty));
+    transition: opacity 0.4s ease; /* Hapus transform dari transition default */
+    will-change: opacity, transform;
 }
 
 .mascot-arona {
     background-image: url('arona.png');
     background-position: bottom 0% left 0%;
-    transform: translateX(-50px); /* Mulai dari agak kiri */
+    --tx: -50px;
 }
 
 .mascot-plana {
     background-image: url('plana.png');
     background-position: bottom 0% right 0%;
-    transform: translateX(50px); /* Mulai dari agak kanan */
+    --tx: 50px;
 }
 
 .mascot-bg.active {
     opacity: 1;
-    transform: translateX(0); /* Meluncur ke tengah/posisi asli */
+    --tx: 0px;
 }
 
 /* --- UTILITIES --- */

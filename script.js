@@ -24,10 +24,17 @@ const modInverse = (e, m) => {
 const switchPage = (target) => {
     document.body.className = "theme-" + target;
     ['arona', 'plana'].forEach(p => {
-        ['page-', 'nav-btn-', 'bg-'].forEach(pre => {
+        ['page-', 'nav-btn-'].forEach(pre => {
             const el = document.getElementById(pre + p);
             if (el) el.classList.toggle('active', p === target);
         });
+        // Mascot Specific with Temporary Transition
+        const bg = document.getElementById('bg-' + p);
+        if (bg) {
+            bg.style.transition = "opacity 0.4s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)";
+            bg.classList.toggle('active', p === target);
+            setTimeout(() => { bg.style.transition = "opacity 0.4s ease"; }, 700);
+        }
     });
     const b = document.getElementById('nav-btn-' + target), i = document.getElementById('nav-indicator');
     if (b && i) { i.style.left = b.offsetLeft + "px"; i.style.width = b.offsetWidth + "px"; }
@@ -145,14 +152,12 @@ const handleDrop = (e, m) => { e.preventDefault(); regFile(e.dataTransfer.files,
 const handleZipSelect = (i) => processZip(i.files[0]);
 const handleZipDrop = (e) => { e.preventDefault(); processZip(e.dataTransfer.files[0]); };
 window.addEventListener('load', () => {
-    switchPage('arona'); document.querySelectorAll('input').forEach(i => {
+    switchPage('arona'); 
+    document.querySelectorAll('input').forEach(i => {
         i.value = ""; if(i.type === "number") i.addEventListener('wheel', (e) => {
             e.preventDefault(); i.value = Math.max(0, parseInt(i.value || 0) + (e.deltaY < 0 ? 1 : -1));
         });
     });
     ['txt-ar', 'txt-cip', 'txt-tk'].forEach(id => { if (document.getElementById(id)) document.getElementById(id).innerText = "Klik atau Seret Berkas Di Sini"; });
     if (window.innerWidth < 768) document.querySelectorAll('.mascot-bg').forEach(bg => bg.style.height = window.innerHeight + "px");
-});
-window.addEventListener('scroll', () => {
-    const s = window.scrollY; document.querySelectorAll('.mascot-bg').forEach(bg => bg.style.backgroundPositionY = `${(s * 0.1)}px`);
 });
