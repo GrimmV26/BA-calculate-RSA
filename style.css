@@ -1,0 +1,345 @@
+/**
+ * SCHALE VAULT DESIGN SYSTEM
+ * Inspired by Blue Archive (Arona/Plana UI)
+ */
+
+/* --- ROOT VARIABLES --- */
+:root {
+    --ba-blue: #12B3E4;
+    --ba-dark: #395273;
+    --plana-black: #2A2A2A;
+    --plana-white: #FFFFFF;
+}
+
+/* --- GLOBAL STYLES --- */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    transition: background 0.5s;
+    overflow-x: hidden;
+}
+
+/* --- THEME: ARONA (BLUE) --- */
+body.theme-arona {
+    background-color: #F0F9FF;
+    background-image: 
+        linear-gradient(rgba(18, 179, 228, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(18, 179, 228, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    color: var(--ba-dark);
+}
+
+/* --- THEME: PLANA (DARK) --- */
+body.theme-plana {
+    background-color: var(--plana-black);
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+    color: white;
+}
+
+/* --- LAYOUT --- */
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 100px 20px 40px;
+    position: relative;
+    z-index: 5;
+}
+
+/* --- NAVIGATION --- */
+nav {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 10px 25px;
+    border-radius: 50px;
+    display: flex;
+    gap: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.theme-plana nav {
+    background: rgba(50, 50, 50, 0.9);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-btn {
+    position: relative;
+    border: none;
+    background: none;
+    font-family: 'Jura', sans-serif;
+    font-weight: 700;
+    padding: 10px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: 0.3s;
+    color: #888;
+    z-index: 2;
+}
+
+.nav-btn.active {
+    color: white;
+}
+
+body.theme-plana .nav-btn.active {
+    color: black;
+}
+
+.nav-indicator {
+    position: absolute;
+    top: 10px;
+    left: 25px;
+    height: calc(100% - 20px);
+    width: 140px;
+    background: var(--ba-blue);
+    border-radius: 25px;
+    transition: 0.3s ease-in-out;
+    z-index: 1;
+    box-shadow: 0 4px 10px rgba(18, 179, 228, 0.3);
+}
+
+body.theme-plana .nav-indicator { 
+    background: white; 
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2); 
+}
+
+/* --- PAGE CONTROL --- */
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- COMPONENTS --- */
+.header-box {
+    padding: 15px 30px;
+    font-family: 'Jura', sans-serif;
+    font-size: 28px;
+    text-transform: uppercase;
+    border-radius: 8px;
+    transform: skewX(-10deg);
+    margin-bottom: 25px;
+    display: inline-block;
+}
+
+.arona-header {
+    background: var(--ba-blue);
+    color: white;
+}
+
+.plana-header {
+    background: white;
+    color: black;
+}
+
+.header-box span {
+    display: inline-block;
+    transform: skewX(10deg);
+}
+
+/* --- PANELS (GLASSMORPHISM) --- */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.theme-plana .glass-panel {
+    background: rgba(40, 40, 40, 0.95);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.glass-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+}
+
+.arona-glass::before {
+    background: var(--ba-blue);
+}
+
+.plana-glass::before {
+    background: white;
+}
+
+/* --- FORMS & INPUTS --- */
+.row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    .row {
+        flex-direction: column;
+    }
+}
+
+.col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: bold;
+    font-size: 12px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+input {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    color: #333;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+body.theme-plana input {
+    background: #1A1A1A;
+    color: white;
+    border-color: #444;
+}
+
+/* --- INTERACTIVE --- */
+.drop-zone {
+    border: 2px dashed rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    padding: 35px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+    margin: 10px 0;
+    background: rgba(0, 0, 0, 0.01);
+}
+
+body.theme-plana .drop-zone {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.drop-zone:hover {
+    border-color: var(--ba-blue);
+    background: rgba(18, 179, 228, 0.05);
+}
+
+body.theme-plana .drop-zone:hover {
+    border-color: white;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.action-btn {
+    border: none;
+    padding: 16px;
+    border-radius: 8px;
+    font-family: 'Jura', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 16px;
+    width: 100%;
+}
+
+.arona-btn {
+    background: var(--ba-blue);
+    color: white;
+    box-shadow: 0 4px 12px rgba(18, 179, 228, 0.2);
+}
+
+.plana-btn {
+    background: white;
+    color: black;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+}
+
+.action-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* --- ASSETS (MASCOT) --- */
+.mascot {
+    position: fixed;
+    bottom: 0;
+    z-index: 1;
+    pointer-events: none;
+    max-height: 55vh;
+    transition: 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    opacity: 0;
+}
+
+.mascot.active {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+}
+
+.mascot-arona {
+    left: 0%;
+    transform: translateX(-100px);
+}
+
+.mascot-plana {
+    right: 0%;
+    transform: translateX(100px);
+}
+
+/* --- UTILITIES --- */
+.progress {
+    height: 6px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    margin-top: 15px;
+    overflow: hidden;
+    display: none;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--ba-blue);
+    width: 0%;
+    transition: 0.1s;
+}
+
+body.theme-plana .progress-fill {
+    background: white;
+}
