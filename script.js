@@ -79,8 +79,15 @@ function switchPage(target) {
 
 function toggleView(id) {
     const input = document.getElementById(id);
+    const btn = input.nextElementSibling;
     if (input) {
-        input.type = input.type === "password" ? "text" : "password";
+        if (input.type === "password") {
+            input.type = "text";
+            btn.innerText = "🕶️";
+        } else {
+            input.type = "password";
+            btn.innerText = "👁️";
+        }
     }
 }
 
