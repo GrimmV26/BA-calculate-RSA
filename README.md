@@ -159,4 +159,3 @@ Langkah instalasi:
 5. Aplikasi siap beroperasi dalam isolasi jaringan yang mutlak.
 
 ---
-**Dokumentasi Terakhir Diperbarui:** Oleh Arona, SCHALE Vault Engineering Team. 💙🛡️
