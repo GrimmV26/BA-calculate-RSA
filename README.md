@@ -63,7 +63,7 @@ graph TD
     J --> K[/Output: Sistem Terkunci & Siap Beroperasi/]
 ```
 
-### B1. Fase Data Type Expansion
+### B1. Worklfow Fase Data Type Expansion 8 -> 64
 Menampung file mentah yang di upload kemudian di potong ke 8 bit yang akhirnya di enkripsi menjadi 64 bit
 ```mermaid
 graph TD
@@ -71,12 +71,10 @@ graph TD
     A --> B[Pecah Data menjadi Uint8Array <br> Wadah Asli: 8-bit / 1-Byte]
     B --> C[Siapkan Buffer BigUint64Array <br> Wadah Baru: 64-bit / 8-Byte]
     C --> D{Mulai Iterasi: <br> Masih ada kepingan 8-bit?}
-    
     D -- Ya --> E[Ambil 1 keping angka murni 8-bit B]
     E --> F[Eksekusi RSA: C = B^E mod N]
     F --> G[Simpan nilai raksasa C ke <br> dalam slot array 64-bit]
     G --> D
-    
     D -- Tidak --> H[Gabungkan seluruh array 64-bit <br> menjadi satu blok memori]
     H --> I[/Output: Bungkus menjadi File .enc <br> Ukuran membengkak 8x lipat/]
     I --> Finish([Selesai])
@@ -106,8 +104,28 @@ graph TD
     N --> O[/Output: Generate & Download ENCRYPTED.zip/]
     O --> P([Selesai])
 ```
+### C1. Workflow Worklfow Fase Data Type Reduction 64 -> 8 (original)
+Pada tahap ini, sistem membaca ZIP terenkripsi. Sebelum file disimpan, mesin matematika melakukan verifikasi integritas data (*Mismatch Check*) pada lapisan *bit-level*.
 
-### C. Workflow Dekripsi & Sensor Integritas (Decryption Pipeline)
+```mermaid
+graph TD
+    Start([Mulai Dekripsi]) --> A[/"Baca File .enc dari Memori"/]
+    A --> B["Load ke BigUint64Array (64-bit)"]
+    B --> C["Siapkan Buffer Uint8Array (8-bit)"]
+    C --> D{"Masih ada data 64-bit?"}
+    D -- Ya --> E["Ambil 1 Keping Ciphertext 64bit (C)"]
+    E --> F["Hitung RSA: B = C^D mod N"]
+    F --> G{"Apakah Hasil B > 255?"}
+    G -- Ya --> H[/"ALERT: Kunci Mismatch! Dibatalkan"/]
+    H --> Abort([Selesai / Gagal])
+    G -- Tidak --> I["Masukkan Angka ke Array 8-bit"]
+    I --> D
+    D -- Tidak --> J["Gabungkan Memori Array 8-bit"]
+    J --> K[/"Ekspor Menjadi File Asli"/]
+    K --> Finish([Selesai / Sukses])
+```
+
+### C2. Workflow Dekripsi & Sensor Integritas (Decryption Pipeline)
 Pada tahap ini, sistem membaca ZIP terenkripsi. Sebelum file disimpan, mesin matematika melakukan verifikasi integritas data (*Mismatch Check*) pada lapisan *bit-level*.
 
 ```mermaid
