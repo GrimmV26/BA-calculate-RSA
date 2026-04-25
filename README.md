@@ -1,4 +1,4 @@
-# SCHALE Vault - Advanced RSA Cryptography System 🛡️✨
+# SCHALE Vault - RSA Cryptography System 🛡️✨
 **Project Code Name:** *Enkripsi file RSA*
 
 **Version:** 2.0 (Modernized Web Architecture)
