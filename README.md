@@ -105,7 +105,7 @@ graph TD
     O --> P([Selesai])
 ```
 ### C1. Workflow Worklfow Fase Data Type Reduction 64 -> 8 (original)
-Pada tahap ini, sistem membaca ZIP terenkripsi. Sebelum file disimpan, mesin matematika melakukan verifikasi integritas data (*Mismatch Check*) pada lapisan *bit-level*.
+Pada fase ini file akan menyusut kembali ke ukuran normalnya (menyusut 8 kali lipat) dengan memindahkan angka raksasa 64-bit kembali ke asalnya yang berukuran 8-bit.
 
 ```mermaid
 graph TD
