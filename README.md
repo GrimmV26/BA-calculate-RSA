@@ -3,6 +3,21 @@
 
 **Version:** 2.0 (Modernized Web Architecture)
 
+## Daftar Isi
+* [1. Pendahuluan](#1-pendahuluan)
+* [2. Arsitektur Teknis](#2-arsitektur-teknis)
+* [3. Spesifikasi Inti Kriptografi (Matematika RSA)](#3-spesifikasi-inti-kriptografi-matematika-rsa)
+* [4. Alur Kerja Sistem (System Workflow) 📊](#4-alur-kerja-sistem-system-workflow-)
+  * [A. Workflow Penghasilan Kunci (Key Generation Pipeline)](#a-workflow-penghasilan-kunci-key-generation-pipeline)
+  * [B1. Worklfow Fase Data Type Expansion 8 -> 64](#b1-worklfow-fase-data-type-expansion-8---64)
+  * [B2. Workflow Enkripsi Data (Encryption Pipeline)](#b2-workflow-enkripsi-data-encryption-pipeline)
+  * [C1. Workflow Worklfow Fase Data Type Reduction 64 -> 8 (original)](#c1-workflow-worklfow-fase-data-type-reduction-64---8-original)
+  * [C2. Workflow Dekripsi & Sensor Integritas (Decryption Pipeline)](#c2-workflow-dekripsi--sensor-integritas-decryption-pipeline)
+* [5. Mesin Pemrosesan Data (The Processing Engine)](#5-mesin-pemrosesan-data-the-processing-engine)
+* [6. Sistem Integritas Data & Keamanan](#6-sistem-integritas-data--keamanan)
+* [7. Integrasi Batch & ZIP](#7-integrasi-batch--zip)
+* [8. Instruksi Penggunaan Offline Total (Air-Gapped Operation)](#8-instruksi-penggunaan-offline-total-air-gapped-operation)
+
 ---
 
 ## 1. Pendahuluan
