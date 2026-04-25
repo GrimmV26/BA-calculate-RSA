@@ -68,21 +68,24 @@ Ini adalah alur di mana file murni (Byte) dikonversi menjadi data terenkripsi 64
 
 ```mermaid
 graph TD
-    A([Mulai Dekripsi]) --> B[/Input: Unggah ENCRYPTED.zip/]
-    B --> C[Ekstrak via JSZip]
-    C --> D[/Input: Ambil Modulus N dan Kunci D/]
-    D --> E[/Input: Baca File .enc/]
-    E --> F[Buka sebagai BigUint64Array 64-bit]
-    F --> G[Siapkan Buffer Uint8Array 8-bit]
-    G --> H[Mulai Chunking Loop]
-    H --> I[modPow: Cipher^D mod N]
-    I --> J{Apakah Hasil > 255n?}
-    J -- Ya --> K[/Output Alert: MISMATCH DETECTED!<br>Proses Dibatalkan Total/]
-    J -- Tidak --> L[Simpan Byte ke Buffer 8-bit]
-    L --> M[/Output: Simpan File ke JSZip/]
-    M --> N[/Output: Generate & Download DECRYPTED.zip/]
-    N --> O([Selesai])
-    K --> O
+    A([Mulai Enkripsi File]) --> B[Buat Objek JSZip Baru]
+    B --> C[/Input: Baca File via ArrayBuffer/]
+    C --> D[Konversi File ke Uint8Array 8-bit]
+    D --> E[Siapkan Buffer BigUint64Array 64-bit]
+    E --> F[Mulai Chunking Loop: 100.000 iterasi]
+    F --> G[modPow: Byte^E mod N]
+    G --> H{Waktu Eksekusi > 30ms?}
+    H -- Ya --> I[/Output: Render Progress Bar - Jeda 0ms/]
+    I --> J[Lanjut Proses Array Berikutnya]
+    H -- Tidak --> J
+    J --> K{Selesai 1 File?}
+    K -- Tidak --> F
+    K -- Ya --> L[/Output: Simpan File ke JSZip/]
+    L --> M{Masih Ada File Lain?}
+    M -- Ya --> C
+    M -- Tidak --> N[/Output: Generate KEY_CARD.kc/]
+    N --> O[/Output: Generate & Download ENCRYPTED.zip/]
+    O --> P([Selesai])
 ```
 
 ### C. Workflow Dekripsi & Sensor Integritas (Decryption Pipeline)
