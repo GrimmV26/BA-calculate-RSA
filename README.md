@@ -50,16 +50,17 @@ Saat pengguna memasukkan angka $P, Q,$ dan $E$, sistem tidak langsung memprosesn
 
 ```mermaid
 graph TD
-    A[Input: P, Q, E] --> B{Apakah P & Q <br> Prima?}
-    B -- Tidak --> C[Alert: Tolak Eksekusi]
+    Start([Mulai]) --> A[/Input: Masukkan Angka P, Q, E/]
+    A --> B{Apakah P & Q <br> Prima?}
+    B -- Tidak --> C[/Output Alert: Tolak Eksekusi/]
     B -- Ya --> D[Hitung Modulus N = P * Q]
     D --> E{Apakah N > 255?}
-    E -- Tidak --> F[Alert: N Terlalu Kecil]
+    E -- Tidak --> F[/Output Alert: N Terlalu Kecil/]
     E -- Ya --> G[Hitung Totient M = P-1 * Q-1]
     G --> H{Apakah GCD E, M == 1?}
-    H -- Tidak --> I[Alert: E Tidak Valid]
+    H -- Tidak --> I[/Output Alert: E Tidak Valid/]
     H -- Ya --> J[Kalkulasi D = modInverse E, M]
-    J --> K[Sistem Terkunci & Siap Beroperasi]
+    J --> K[/Output: Sistem Terkunci & Siap Beroperasi/]
 ```
 
 ### B. Workflow Enkripsi Data (Encryption Pipeline)
@@ -67,23 +68,21 @@ Ini adalah alur di mana file murni (Byte) dikonversi menjadi data terenkripsi 64
 
 ```mermaid
 graph TD
-    A[Mulai Enkripsi File] --> B[Buat Objek JSZip Baru]
-    B --> C[Loop: Baca File via ArrayBuffer]
-    C --> D[Konversi File ke Uint8Array 8-bit]
-    D --> E[Siapkan Buffer BigUint64Array 64-bit]
-    E --> F[Mulai Chunking Loop: 100.000 iterasi]
-    F --> G[modPow: Byte^E mod N]
-    G --> H{Waktu Eksekusi > 30ms?}
-    H -- Ya --> I[Jeda 0ms: Render Progress Bar]
-    I --> J[Lanjut Proses Array Berikutnya]
-    H -- Tidak --> J
-    J --> K{Selesai 1 File?}
-    K -- Tidak --> F
-    K -- Ya --> L[Simpan Output File ke JSZip]
-    L --> M{Masih Ada File Lain?}
-    M -- Ya --> C
-    M -- Tidak --> N[Generate KEY_CARD.kc]
-    N --> O[Generate & Download ENCRYPTED.zip]
+    A([Mulai Dekripsi]) --> B[/Input: Unggah ENCRYPTED.zip/]
+    B --> C[Ekstrak via JSZip]
+    C --> D[/Input: Ambil Modulus N dan Kunci D/]
+    D --> E[/Input: Baca File .enc/]
+    E --> F[Buka sebagai BigUint64Array 64-bit]
+    F --> G[Siapkan Buffer Uint8Array 8-bit]
+    G --> H[Mulai Chunking Loop]
+    H --> I[modPow: Cipher^D mod N]
+    I --> J{Apakah Hasil > 255n?}
+    J -- Ya --> K[/Output Alert: MISMATCH DETECTED!<br>Proses Dibatalkan Total/]
+    J -- Tidak --> L[Simpan Byte ke Buffer 8-bit]
+    L --> M[/Output: Simpan File ke JSZip/]
+    M --> N[/Output: Generate & Download DECRYPTED.zip/]
+    N --> O([Selesai])
+    K --> O
 ```
 
 ### C. Workflow Dekripsi & Sensor Integritas (Decryption Pipeline)
@@ -91,18 +90,21 @@ Pada tahap ini, sistem membaca ZIP terenkripsi. Sebelum file disimpan, mesin mat
 
 ```mermaid
 graph TD
-    A[Unggah ENCRYPTED.zip] --> B[Ekstrak via JSZip]
-    B --> C[Ambil Modulus N dan Kunci D]
-    C --> D[Loop: Baca File .enc]
-    D --> E[Buka sebagai BigUint64Array 64-bit]
-    E --> F[Siapkan Buffer Uint8Array 8-bit]
-    F --> G[Mulai Chunking Loop]
-    G --> H[modPow: Cipher^D mod N]
-    H --> I{Apakah Hasil > 255n?}
-    I -- Ya --> J[ALERT: MISMATCH DETECTED!<br>Proses Dibatalkan Total]
-    I -- Tidak --> K[Simpan Byte ke Buffer 8-bit]
-    K --> L[Simpan Output File ke JSZip]
-    L --> M[Generate & Download DECRYPTED.zip]
+    A([Mulai Dekripsi]) --> B[/Input: Unggah ENCRYPTED.zip/]
+    B --> C[Ekstrak via JSZip]
+    C --> D[/Input: Ambil Modulus N dan Kunci D/]
+    D --> E[/Input: Baca File .enc/]
+    E --> F[Buka sebagai BigUint64Array 64-bit]
+    F --> G[Siapkan Buffer Uint8Array 8-bit]
+    G --> H[Mulai Chunking Loop]
+    H --> I[modPow: Cipher^D mod N]
+    I --> J{Apakah Hasil > 255n?}
+    J -- Ya --> K[/Output Alert: MISMATCH DETECTED!<br>Proses Dibatalkan Total/]
+    J -- Tidak --> L[Simpan Byte ke Buffer 8-bit]
+    L --> M[/Output: Simpan File ke JSZip/]
+    M --> N[/Output: Generate & Download DECRYPTED.zip/]
+    N --> O([Selesai])
+    K --> O
 ```
 
 ---
