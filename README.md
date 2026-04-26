@@ -78,7 +78,7 @@ graph TD
     J --> K[/Output: Sistem Terkunci & Siap Beroperasi/]
 ```
 
-### B1. Worklfow Fase Data Type Expansion 8 -> 64
+### B1. Workflow Fase Data Type Expansion 8 -> 64
 Menampung file mentah yang di upload kemudian di potong ke 8 bit yang akhirnya di enkripsi menjadi 64 bit
 ```mermaid
 graph TD
