@@ -1,8 +1,9 @@
 /**
- * SCHALE RSA TOOL - COMPACT LOGIC (BATCH SUPPORT + INTEGRITY CHECK)
+ * SCHALE RSA TOOL - HYBRID READABLE VERSION
+ * Compact utilities with expanded main logic.
  */
 
-// RSA MATH & VALIDATION
+// --- RSA MATH & VALIDATION ---
 const isPrime = (n) => {
     if (n < 2n) return false;
     for (let i = 2n; i * i <= n; i++) if (n % i === 0n) return false;
@@ -16,11 +17,15 @@ const modPow = (b, e, m) => {
 };
 const modInverse = (e, m) => {
     let [t0, t1, r0, r1] = [0n, 1n, BigInt(m), BigInt(e)];
-    while (r1 !== 0n) { let q = r0 / r1; [t0, t1] = [t1, t0 - q * t1]; [r0, r1] = [r1, r0 - q * r1]; }
+    while (r1 !== 0n) {
+        let q = r0 / r1;
+        [t0, t1] = [t1, t0 - q * t1];
+        [r0, r1] = [r1, r0 - q * r1];
+    }
     return t0 < 0n ? t0 + BigInt(m) : t0;
 };
 
-// UI & NAVIGATION
+// --- UI & NAVIGATION ---
 const switchPage = (target) => {
     document.body.className = "theme-" + target;
     ['arona', 'plana'].forEach(p => {
@@ -28,12 +33,10 @@ const switchPage = (target) => {
             const el = document.getElementById(pre + p);
             if (el) el.classList.toggle('active', p === target);
         });
-        // Mascot Specific with Temporary Transition
+        // Mascot Animation ditangani penuh oleh CSS untuk mencegah bug jump saat klik cepat
         const bg = document.getElementById('bg-' + p);
         if (bg) {
-            bg.style.transition = "opacity 0.4s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)";
             bg.classList.toggle('active', p === target);
-            setTimeout(() => { bg.style.transition = "opacity 0.4s ease"; }, 700);
         }
     });
     const b = document.getElementById('nav-btn-' + target), i = document.getElementById('nav-indicator');
@@ -46,7 +49,7 @@ const toggleView = (id) => {
     el.nextElementSibling.innerText = el.type === "password" ? "👁️" : "🕶️";
 };
 
-// FILE HANDLING
+// --- FILE HANDLING ---
 let filesToEnc = [], filesToDec = [], originalName = "", currentZipId = "";
 
 const regFile = (inputFiles, mode) => {
@@ -95,7 +98,7 @@ const checkReady = () => {
 };
 
 const calcKeys = () => {
-    const [p, q, e] = ["p_val", "q_val", "e_val"].map(id => BigInt(document.getElementById(id).value.replace(/\D/g,'') || 0));
+    const [p, q, e] = ["p_val", "q_val", "e_val"].map(id => BigInt(document.getElementById(id).value.replace(/\D/g, '') || 0));
     if (!p || !q || !e) return alert("P, Q, E harus angka!");
     if (!isPrime(p) || !isPrime(q)) return alert("Arona: P dan Q harus angka PRIMA!");
     if (p * q < 256n) return alert("Arona: N harus > 255!");
@@ -124,12 +127,17 @@ const processFile = async (isEnc) => {
                 const dec = modPow(view[j], bK, bN);
                 if (!isEnc && dec > 255n) {
                     prog.style.display = "none"; fill.style.width = "0%";
-                    return alert("Arona: Kunci Mismatch! Berkas tidak cocok dengan kunci ini (Modulus atau Privat D salah).");
+                    return alert("Arona: Kunci Mismatch! Berkas tidak cocok.");
                 }
                 out[j] = isEnc ? dec : Number(dec);
             }
             fill.style.width = (((i + (x / total)) / files.length) * 100) + "%";
-            if (performance.now() - lastP > 30) { await new Promise(r => setTimeout(r, 0)); lastP = performance.now(); }
+
+            // Multiline Performance Break
+            if (performance.now() - lastP > 30) {
+                await new Promise(r => setTimeout(r, 0));
+                lastP = performance.now();
+            }
         }
         if (isEnc) outZip.file(f.name + ".enc", out.buffer);
         else outZip.file((files.length === 1 && originalName) ? originalName : f.name.replace(".enc", ""), out.buffer);
@@ -146,18 +154,30 @@ const saveAs = (blob, fn) => {
     a.href = u; a.download = fn; a.click(); setTimeout(() => URL.revokeObjectURL(u), 60000);
 };
 
-// BRIDGES & PARALLAX
+// --- EVENT BRIDGES ---
 const handleSelect = (i, m) => regFile(i.files, m);
-const handleDrop = (e, m) => { e.preventDefault(); regFile(e.dataTransfer.files, m); };
+const handleDrop = (e, m) => {
+    e.preventDefault();
+    regFile(e.dataTransfer.files, m);
+};
+
 const handleZipSelect = (i) => processZip(i.files[0]);
-const handleZipDrop = (e) => { e.preventDefault(); processZip(e.dataTransfer.files[0]); };
+const handleZipDrop = (e) => {
+    e.preventDefault();
+    processZip(e.dataTransfer.files[0]);
+};
+
 window.addEventListener('load', () => {
-    switchPage('arona'); 
+    switchPage('arona');
     document.querySelectorAll('input').forEach(i => {
-        i.value = ""; if(i.type === "number") i.addEventListener('wheel', (e) => {
+        i.value = ""; if (i.type === "number") i.addEventListener('wheel', (e) => {
             e.preventDefault(); i.value = Math.max(0, parseInt(i.value || 0) + (e.deltaY < 0 ? 1 : -1));
         });
     });
-    ['txt-ar', 'txt-cip', 'txt-tk'].forEach(id => { if (document.getElementById(id)) document.getElementById(id).innerText = "Klik atau Seret Berkas Di Sini"; });
+
+    ['txt-ar', 'txt-cip', 'txt-tk'].forEach(id => {
+        if (document.getElementById(id)) document.getElementById(id).innerText = "Klik atau Seret Berkas Di Sini";
+    });
+
     if (window.innerWidth < 768) document.querySelectorAll('.mascot-bg').forEach(bg => bg.style.height = window.innerHeight + "px");
 });

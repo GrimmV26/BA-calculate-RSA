@@ -29,7 +29,7 @@ body {
 /* --- THEME: ARONA (BLUE) --- */
 body.theme-arona {
     background-color: #F0F9FF;
-    background-image: 
+    background-image:
         linear-gradient(rgba(18, 179, 228, 0.05) 1px, transparent 1px),
         linear-gradient(90deg, rgba(18, 179, 228, 0.05) 1px, transparent 1px);
     background-size: 40px 40px;
@@ -54,7 +54,8 @@ body.theme-plana {
     z-index: 5;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Memastikan semua isinya ke tengah */
+    align-items: center;
+    /* Memastikan semua isinya ke tengah */
 }
 
 .page {
@@ -114,7 +115,8 @@ body.theme-plana .nav-btn.active {
     top: 5px;
     left: 5px;
     height: calc(100% - 10px);
-    width: 0; /* Akan diatur oleh JS */
+    width: 0;
+    /* Akan diatur oleh JS */
     background: var(--ba-blue);
     border-radius: 25px;
     transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -122,9 +124,9 @@ body.theme-plana .nav-btn.active {
     box-shadow: 0 4px 10px rgba(18, 179, 228, 0.3);
 }
 
-body.theme-plana .nav-indicator { 
-    background: white; 
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2); 
+body.theme-plana .nav-indicator {
+    background: white;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
 }
 
 /* --- PAGE CONTROL --- */
@@ -142,6 +144,7 @@ body.theme-plana .nav-indicator {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -152,13 +155,15 @@ body.theme-plana .nav-indicator {
 .header-box {
     padding: 12px 25px;
     font-family: 'Jura', sans-serif;
-    font-size: clamp(20px, 5vw, 28px); /* Ukuran font fleksibel */
+    font-size: clamp(20px, 5vw, 28px);
+    /* Ukuran font fleksibel */
     text-transform: uppercase;
     border-radius: 8px;
     transform: skewX(-10deg);
     margin-bottom: 25px;
     display: inline-block;
 }
+
 @media (max-width: 600px) {
     .header-box {
         transform: skewX(-10deg);
@@ -166,6 +171,7 @@ body.theme-plana .nav-indicator {
         margin: 0 20px 25px;
         text-align: center;
     }
+
     .header-box span {
         transform: skewX(10deg);
     }
@@ -198,7 +204,7 @@ body.theme-plana .nav-indicator {
     position: relative;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.3);
-    will-change: transform, opacity; /* Akselerasi GPU */
+    transform: translateZ(0); /* Akselerasi GPU ringan yang lebih aman dari will-change */
 }
 
 body.theme-plana .glass-panel {
@@ -372,9 +378,8 @@ body.theme-plana .drop-zone:hover {
     background-size: auto 55%;
     opacity: 0;
     --ty: 0px;
-    transform: translate(var(--tx), var(--ty));
-    transition: opacity 0.4s ease; /* Hapus transform dari transition default */
-    will-change: opacity, transform;
+    transform: translate(var(--tx), var(--ty)) translateZ(0);
+    transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .mascot-arona {
